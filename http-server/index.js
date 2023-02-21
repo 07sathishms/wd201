@@ -3,6 +3,8 @@ const fs = require("fs");
 let homeContent = "";
 let projectContent = "";
 let registraionContent ="";
+const args = require("minimist")(process.argv);
+const port = args.port;
 fs.readFile("home.html", (err, home) => {
   if (err) {
     throw err;
@@ -41,4 +43,5 @@ http
         break;
     }
   })
-  .listen(3001);
+
+  .listen(port);
