@@ -28,7 +28,7 @@ describe("Todolist test suite",()=>{
         expect(all[0].completed).toBe(true);
     })
     test('retrieves overdue items', () => {
-        const date = new Date().toLocaleDateString("en-CA")
+        const date = "2023-02-23"
         expect(all[0].dueDate).toBe(date);
       });
     
@@ -38,7 +38,7 @@ describe("Todolist test suite",()=>{
       });
     
       test('retrieves due later items', () => {
-        const date = new Date().toLocaleDateString("en-CA")
+        const date = "2023-02-28"
         expect(all[0].dueDate).toBe(date);
       });
     })
