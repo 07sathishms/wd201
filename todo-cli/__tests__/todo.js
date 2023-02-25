@@ -1,4 +1,5 @@
-const todoList = require('../todo');
+
+const todoList = require('../todo')
 const {all,markAsComplete,add} = todoList();
 describe("Todolist test suite",()=>{
     beforeAll(()=>{
@@ -38,5 +39,4 @@ describe("Todolist test suite",()=>{
         const date = new Date().toLocaleDateString("en-CA")
         expect(all[0].dueDate).toBe(date);
       });
-  
-})
+    })
