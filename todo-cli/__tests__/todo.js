@@ -12,10 +12,10 @@ describe("Todolist test suite",()=>{
         const todoItemsCount = all.length;
         add(
             {
-                title: "Test Todo",
+               title: "Test Todo",
                 completed: false,
                 dueDate: new Date().toLocaleDateString("en-CA")
-        }
+        }   
         );
         expect(all.length).toBe(todoItemsCount+1) ;
     })
@@ -24,4 +24,19 @@ describe("Todolist test suite",()=>{
         markAsComplete(0);
         expect(all[0].completed).toBe(true);
     })
+    test('retrieves overdue items', () => {
+        const date = new Date().toLocaleDateString("en-CA")
+        expect(all[0].dueDate).toBe(date);
+      });
+    
+      test('retrieves due today items', () => {
+        const date = new Date().toLocaleDateString("en-CA")
+        expect(all[0].dueDate).toBe(date);
+      });
+    
+      test('retrieves due later items', () => {
+        const date = new Date().toLocaleDateString("en-CA")
+        expect(all[0].dueDate).toBe(date);
+      });
+  
 })

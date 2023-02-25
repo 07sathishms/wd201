@@ -10,5 +10,8 @@
         "ecmaVersion": "latest"
     },
     "rules": {
-    }
+    },
+    "ignorePatterns":[
+        "./todo.js"
+    ]
 }
