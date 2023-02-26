@@ -8,7 +8,7 @@ describe("Todolist test suite",()=>{
         add({
             title: "Test Todo",
             completed: false,
-            dueDate: new Date().toLocaleDateString("en-CA")
+            dueDate: '2023-02-23'
         })
     })
     test("should add new todo",()=>{
@@ -17,7 +17,7 @@ describe("Todolist test suite",()=>{
             {
                title: "Test Todo",
                 completed: false,
-                dueDate: new Date().toLocaleDateString("en-CA")
+                dueDate: '2023-02-23'
         }   
         );
         expect(all.length).toBe(todoItemsCount+1) ;
@@ -28,13 +28,12 @@ describe("Todolist test suite",()=>{
         expect(all[0].completed).toBe(true);
     })
     test('retrieves overdue items', () => {
-        const date = "2023-02-23"
+        const date = "2023-02-20"
         expect(all[0].dueDate).toBe(date);
       });
     
       test('retrieves due today items', () => {
-        const date = new Date().toLocaleDateString("en-CA")
-        expect(all[0].dueDate).toBe(date);
+        expect(all[0].dueDate).toBe('2023-02-23');
       });
     
       test('retrieves due later items', () => {
