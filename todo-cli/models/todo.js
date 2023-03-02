@@ -76,25 +76,24 @@ module.exports = (sequelize, DataTypes) => {
 
     static async markAsComplete(id) {
       // FILL IN HERE TO MARK AN ITEM AS COMPLETE
-     await Todo.update({
-      completed :true 
-     },
-     {
-     where: {
-      id: id,
-     },
-    
-
-     });
+      const todo = await Todo.findByPk(id);
+      if(todo){
+        todo.completed = true;
+        await todo.save();
+      }     
 
     }
 
     displayableString() {
-      let checkbox = this.completed ? "[x]" : "[ ]";
+      let check = this.completed ? "[x]" : "[ ]";
       const day = new Date(this.dueDate);
-      return day.getDate() === new Date().getDate()
-        ? `${this.id}. ${checkbox} ${this.title}`.trim()
-        : `${this.id}. ${checkbox} ${this.title} ${this.dueDate}`.trim();
+      if (this.completed && day < new Date()) {
+        return `${this.id}. ${check} ${this.title} ${this.dueDate}`.trim();
+      } else if (day.getDate() === new Date().getDate()) {
+        return `${this.id}. ${check} ${this.title}`.trim();
+      } else {
+        return `${this.id}. ${check} ${this.title} ${this.dueDate}`.trim();
+      }
     }
   }
   Todo.init({
