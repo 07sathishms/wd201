@@ -18,21 +18,24 @@ module.exports = (sequelize, DataTypes) => {
       console.log("Overdue");
       // FILL IN HERE
      const ov = await Todo.overdue();
-     ov.forEach(todo => console.log(todo.displayableString()));
+     const over = ov.map(todo => todo.displayableString());
     
-    
+    console.log(over.join("\n").trim());
       console.log("\n");
 
       console.log("Due Today");
       // FILL IN HERE
-      const td = await Todo.dueToday();
-     td.forEach(todo => console.log(todo.displayableString()));
-      console.log("\n");
+      const dt = await Todo.dueToday();
+     const today = dt.map(todo => todo.displayableString());
+    
+    console.log(today.join("\n").trim());
 
       console.log("Due Later");
       // FILL IN HERE
       const dl = await Todo.dueLater();
-     dl.forEach(todo => console.log(todo.displayableString()));
+      const later = dl.map(todo => todo.displayableString());
+      
+    console.log(later.join("\n").trim());
     }
 
     static async overdue() {
