@@ -76,11 +76,16 @@ module.exports = (sequelize, DataTypes) => {
 
     static async markAsComplete(id) {
       // FILL IN HERE TO MARK AN ITEM AS COMPLETE
-      const todo = await Todo.findByPk(id);
-      if(todo){
-        todo.completed = true;
-        await todo.save();
-      }     
+     await Todo.update({
+      completed :true 
+     },
+     {
+     where: {
+      id: id,
+     },
+    
+
+     });
 
     }
 
