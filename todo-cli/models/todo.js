@@ -85,7 +85,7 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     displayableString() {
-      const dueDate = isDueToday(all.dueDate)
+      const dueDate = isDueToday(this.dueDate)
       ? ""
       : this.dueDate;
     const status = this.completed ? "[x]" : "[ ]";
