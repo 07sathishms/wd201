@@ -25,13 +25,13 @@ module.exports = (sequelize, DataTypes) => {
 
       console.log("Due Today");
       // FILL IN HERE
-      const td = await Todo.overdue();
+      const td = await Todo.dueToday();
      td.forEach(todo => console.log(todo.displayableString()));
       console.log("\n");
 
       console.log("Due Later");
       // FILL IN HERE
-      const dl = await Todo.overdue();
+      const dl = await Todo.dueLater();
      dl.forEach(todo => console.log(todo.displayableString()));
     }
 
