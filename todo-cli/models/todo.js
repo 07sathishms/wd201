@@ -88,7 +88,7 @@ module.exports = (sequelize, DataTypes) => {
       let check = this.completed ? "[x]" : "[ ]";
       let dateString = "";
 
-    if (this.completed && this.dueDate > new Date().toISOString().slice(0, 10)) {
+    if (this.completed && this.dueDate <= new Date().toISOString().slice(0, 10)) {
       // task is completed and overdue
       check = "[x]";
       dateString = ` ${this.dueDate}`;
