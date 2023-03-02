@@ -86,11 +86,25 @@ module.exports = (sequelize, DataTypes) => {
 
     displayableString() {
       let check = this.completed ? "[x]" : "[ ]";
-      let dateString = this.dueDate.toLocaleDateString();
-      if (this.dueDate.getTime() === new Date().setHours(0,0,0,0)) {
-        dateString = "";
-      }
-      return `${this.id}. ${check} ${this.title} ${dateString}`;
+      let dateString = "";
+
+    if (this.completed && this.dueDate < new Date().toISOString().slice(0, 10)) {
+      // task is completed and overdue
+      check = "[x]";
+      dateString = ` ${this.dueDate}`;
+    } else if (this.dueDate < new Date().toISOString().slice(0, 10)) {
+      // task is overdue and incomplete
+      check= "[x]";
+      dateString = ` ${this.dueDate}`;
+    } else if (this.dueDate === new Date().toISOString().slice(0, 10)) {
+      // task is due today
+      dateString = "";
+    } else {
+      // task is due later
+      dateString = ` ${this.dueDate}`;
+    }
+    return `${this.id}. ${check} ${this.title}${dateString}`;
+     
     }
   }
   Todo.init({
