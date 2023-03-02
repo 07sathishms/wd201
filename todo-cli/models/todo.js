@@ -1,6 +1,6 @@
 'use strict';
 const {
-  Model, Op, DATE
+  Model, Op
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Todo extends Model {
@@ -87,15 +87,9 @@ module.exports = (sequelize, DataTypes) => {
     displayableString() {
       let check = this.completed ? "[x]" : "[ ]";
       const day = new Date(this.dueDate);
-     if(day.getDate() === new Date().getDate()){
-       return`${this.id}. ${check} ${this.title} ${this.dueDate}`.trim()
-     }else if(day < new Date()){
-      return`${this.id}. ${check} ${this.title}`
-     }
-     else{
-      return`${this.id}. ${check} ${this.title} ${this.dueDate}`.trim()
-
-     }
+      return day.getDate() === new Date().getDate()
+      ? `${this.id}. ${check} ${this.title}`.trim()
+      : `${this.id}. ${check} ${this.title} ${this.dueDate}`.trim()
      
     }
   }
