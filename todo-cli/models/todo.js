@@ -85,12 +85,12 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     displayableString() {
-      const dueDate = isDueToday(this.dueDate)
-      ? ""
-      : this.dueDate;
-    const status = this.completed ? "[x]" : "[ ]";
-
-    return `${status} ${this.title} ${dueDate}`;
+      let check = this.completed ? "[x]" : "[ ]";
+      let dateString = this.dueDate.toLocaleDateString();
+      if (this.dueDate.getTime() === new Date().setHours(0,0,0,0)) {
+        dateString = "";
+      }
+      return `${this.id}. ${check} ${this.title} ${dateString}`;
     }
   }
   Todo.init({
