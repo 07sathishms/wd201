@@ -86,16 +86,10 @@ module.exports = (sequelize, DataTypes) => {
 
     displayableString() {
       let check = this.completed ? "[x]" : "[ ]";
-      let dateString = "";
-
-     if (!this.completed && this.dueDate === new Date().toISOString().slice(0, 10)) {
-      // task is due today
-      dateString = "";
-    } else {
-      // task is due later
-      dateString = ` ${this.dueDate}`;
-    }
-    return `${this.id}. ${check} ${this.title}${dateString}`;
+      const day = new Date(this.dueDate);
+      return day.getDate() === new Date().getDate()
+        ? `${this.id}. ${check} ${this.title}`.trim()
+        : `${this.id}. ${check} ${this.title} ${this.dueDate}`.trim();
      
     }
   }
