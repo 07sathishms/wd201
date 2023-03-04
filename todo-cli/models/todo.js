@@ -43,7 +43,6 @@ module.exports = (sequelize, DataTypes) => {
       return await Todo.findAll({
         where: {
           dueDate: {[Op.lt]:date},
-          completed: false
         },
         order: [['dueDate','ASC']]
 
@@ -56,7 +55,6 @@ module.exports = (sequelize, DataTypes) => {
       return await Todo.findAll({
         where: {
           dueDate: {[Op.eq]:date},
-          completed: false
         },
         order: [['dueDate','ASC']]
 
@@ -69,7 +67,6 @@ module.exports = (sequelize, DataTypes) => {
       return await Todo.findAll({
         where: {
           dueDate: {[Op.gt]:date},
-          completed: false
         },
         order: [['dueDate','ASC']]
 
