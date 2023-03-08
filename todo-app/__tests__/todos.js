@@ -43,17 +43,6 @@ describe("Todo test suite",()=>{
       const parseUpadteTodo = JSON.parse(changeTodo.text);
       expect(parseUpadteTodo.completed).toBe(true);
       });
-      test('Deletes an existing to-do and returns true', async () => {
-        const resp = await agent.post("/todos").send({
-            title: "Buy rolls roye",dueDate: new Date().toISOString(),completed: false,
-          });
-          const parse = JSON.parse(resp.text);
-          const todo = parse.id;
-      
-          const res = await agent.delete(`/todos/${todo}`).send();
-          const boolean = Boolean(res.text);
-          expect(boolean).toBe(true);
-      });
       test('Fetching the all todos', async () => {
          await agent.post("/todos").send({
             title: "Buy bullet",dueDate: new Date().toISOString(),completed: false,
@@ -67,8 +56,19 @@ describe("Todo test suite",()=>{
           const resp= await agent.get("/todos");
           const parse = JSON.parse(resp.text);
       
-          expect(parse.length).toBe(6);
-          expect(parse[3]["title"]).toBe("Buy bullet");
+          expect(parse.length).toBe(5);
+          expect(parse[3]["title"]).toBe("Buy train");
+      });
+      test('Deletes an existing to-do and returns true', async () => {
+        const resp = await agent.post("/todos").send({
+            title: "Buy rolls royce",dueDate: new Date().toISOString(),completed: false,
+          });
+          const parse = JSON.parse(resp.text);
+          const todo = parse.id;
+      
+          const res = await agent.delete(`/todos/${todo}`).send();
+          const boolean = Boolean(res.text);
+          expect(boolean).toBe(true);
       });
       
 })
