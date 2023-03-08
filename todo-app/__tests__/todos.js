@@ -72,5 +72,4 @@ describe("Todo test suite",()=>{
     const boolean = Boolean(res.text);
     expect(boolean).toBe(true);
       });
-      
 })
