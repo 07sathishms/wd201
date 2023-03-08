@@ -54,13 +54,10 @@ app.put("/todos/:id",async(request,response)=>{
     const id = request.params.id;
 
     try {
-      const deletedTodo = await Todo.destroy({ where: { id } });
-      if (deletedTodo) {
-        response.status(200).json(true);
-      } else {
-        response.status(404).json(false);
+        const deleted = await Todo.destroy({ where: { id: req.params.id } });
+        res.send(deleted ? true : false);
       }
-    } catch (err) {
+     catch (err) {
       console.error(err);
       response.status(500).json({ message: 'Server error' });
     }
