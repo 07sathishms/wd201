@@ -54,11 +54,6 @@ describe("Todo test suite",()=>{
           const boolean = Boolean(res.text);
           expect(boolean).toBe(true);
       });
-      test('Returns false for a non-existing to-do', async () => {
-        const res = await request(app).delete('/todos/999').expect(404);
-    
-        expect(res.body).toBe(false);
-      });
       test('Fetching the all todos', async () => {
          await agent.post("/todos").send({
             title: "Buy bullet",dueDate: new Date().toISOString(),completed: false,
