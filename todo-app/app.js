@@ -52,15 +52,8 @@ app.put("/todos/:id/markAsCompleted",async(request,response)=>{
 app.put("/todos/:id",async(request,response)=>{
     console.log("Delete a todo",request.params.id)
     const id = request.params.id;
-
-    try {
-        const deleted = await Todo.destroy({ where: { id: req.params.id } });
-        res.send(deleted ? true : false);
-      }
-     catch (err) {
-      console.error(err);
-      response.status(500).json({ message: 'Server error' });
-    }
+        const deleted = await Todo.destroy({ where: { id: request.params.id } });
+        response.send(deleted ? true : false);
 })
 module.exports = app;
 
