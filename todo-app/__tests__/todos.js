@@ -60,16 +60,18 @@ describe("Todo test suite",()=>{
           expect(parse[3]["title"]).toBe("Buy train");
       });
       test('Deletes an existing to-do and returns true', async () => {
-      const response = await agent.post("/todos").send({
-      title: "Buy appache",
-      dueDate: new Date().toISOString(),
-      completed: false,
-    });
-    const parser = JSON.parse(response.text);
-    const id = parser.id;
+        const response = await agent.post("/todos").send({
+          title: "Buy a car",
+          dueDate: new Date().toISOString(),
+          completed: false,
+        });
+        const parsedResponse = JSON.parse(response.text);
+        const todo = parsedResponse.id;
+    
+        const res = await request(app).delete(`/todos/${todo}`);
+        expect(res.body).toBe(true);
 
-    const res = await agent.delete(`/todos/${id}`).send();
-    const boolean = Boolean(res.text);
-    expect(boolean).toBe(true);
+        const responds = await request(app).delete(`/todos/23324`);
+        expect(responds.body).toBe(false);
       });
 })
