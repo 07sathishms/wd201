@@ -39,7 +39,7 @@ app.put("/todos/:id/markAsCompleted",async(request,response)=>{
       }
 })
 
-app.put("/todos/:id",async(request,response)=>{
+app.delete("/todos/:id",async(request,response)=>{
   try {
     const todo = await Todo.findByPk(request.params.id);
     if (todo) {
