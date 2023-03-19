@@ -1,7 +1,7 @@
 'use strict';
 const {
   Model
-} = require('sequelize');
+,Op} = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Todo extends Model {
     /**
@@ -11,12 +11,81 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+    } static overdueTodo() {
+      return this.findAll({
+        where: {
+          dueDate: { [Op.lt]: new Date() },
+        },
+        order: [["dueDate", "ASC"]],
+      });
+    }
+    static markAsCompleteditems() {
+      return this.findAll({
+        where: {
+          completed: true,
+        },
+        order: [["id", "ASC"]],
+      });
+    }
+
+    static duetodayTodo() {
+      return this.findAll({
+        where: {
+          dueDate: { [Op.eq]: new Date() },
+        },
+        order: [["dueDate", "ASC"]],
+      });
+    }
+
+    static duelaterTodo() {
+      return this.findAll({
+        where: {
+          dueDate: { [Op.gt]: new Date() },
+        },
+        order: [["dueDate", "ASC"]],
+      });
     }
     static getTodos() {
       return this.findAll({ order: [["id", "ASC"]] });
     }
     static addTodo({title,dueDate}){
       return this.create({title: title,dueDate: dueDate,completed: false})
+    }
+    static overdueTodo() {
+      return this.findAll({
+        where: {
+          dueDate: { [Op.lt]: new Date() },
+        },
+        order: [["dueDate", "ASC"]],
+      });
+    }
+
+    static duetodayTodo() {
+      return this.findAll({
+        where: {
+          dueDate: { [Op.eq]: new Date() },
+        },
+        order: [["dueDate", "ASC"]],
+      });
+    }
+
+    static duelaterTodo() {
+      return this.findAll({
+        where: {
+          dueDate: { [Op.gt]: new Date() },
+        },
+        order: [["dueDate", "ASC"]],
+      });
+    }
+    static remove(id) {
+      return this.destroy({
+        where: {
+          id,
+        },
+      });
+    }
+    setCompletionStatus(boolean) {
+      return this.update({ completed: boolean });
     }
     markAsCompleted() {
       return this.update({ completed: true });
