@@ -1,27 +1,114 @@
 const { request, response } = require('express')
 var csrf = require("tiny-csrf");
+const passport = require('passport');
+const connectEnsureLogin =  require('connect-ensure-login');
+const session = require('express-session');
+const LocalStrategy = require('passport-local'); 
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+
 //var csurf = require("tiny-csrf");
 const express = require('express')
 const app = express()
-const {Todo} = require("./models")
+const {Todo,User} = require("./models")
 const bodyParser = require('body-parser')
 const cookieParser = require("cookie-parser")
-const path = require("path")
+const path = require("path");
 app.use(bodyParser.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser("shh! some secret string"));
 app.use(csrf("this_should_be_32_character_long",["POST","PUT","DELETE"]));
 app.set("view engine","ejs");
+app.use(session({
+  secret: "my-super-secret-key-21728172615261562",
+  cookie:{
+    maxAge: 24 * 60 * 60 *1000
+  }
+}));
+passport.serializeUser((user,done)=>{
+  console.log("Serializing user in session",user.id)
+  done(null,user.id)
+});
+passport.deserializeUser((id,done)=>{
+  User.findByPk(id)
+  .then(user =>{
+    done(null,user)
+  })
+  .catch(error =>{
+    done(error,null)  
+  })
+})  
 
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(
+  new LocalStrategy({
+      usernameField: "email",passwordField: "password",},
+    (username, password, done) => {
+      User.findOne({
+        where: {
+          email: username,
+        },
+      })
+        .then(async (user) => {
+          const result = await bcrypt.compare(password, user.password);
+          if (result) {
+            return done(null, user);
+          } else {
+            return done(null, false, { message: "Invalid Password" });
+          }
+        })
+        .catch((error) => {
+          return done(null, false, {
+            message: "Account doesn't exist for this mail id",
+          });
+        });
+    }
+  )
+);
+
+app.get("/signup",(request,response)=>{
+  response.render("signup",{title: "Sign up",csrfToken: request.csrfToken()})
+})
+
+app.post("/users", async (request,response)=>{
+  const hashedPwd = await bcrypt.hash(request.body.password,saltRounds)
+  console.log(hashedPwd)
+  try {
+    const user = await User.create({
+      firstName: request.body.firstName,
+      lasttName: request.body.lastName,
+      email: request.body.email,
+      password: hashedPwd,
+    })
+    request.login(user,(err)=>{
+      if(err){
+        console.log(err)
+        response.redirect("/todo");  
+      }
+    })
+    
+  } catch (error) {
+    console.log(error);
+  }
+ 
+})
 app.get("/",async (request,response)=>{
+  response.render("index",{
+    title: "Todo application",
+    csrfToken: request.csrfToken(),
+  })
+})
+app.get("/todos",connectEnsureLogin.ensureLoggedIn(), async (request,response)=>{
   const overdue = await Todo.overdueTodo();
   const duetoday = await Todo.duetodayTodo();
   const duelater = await Todo.duelaterTodo();
   const completed = await Todo.markAsCompleteditems();
 
- // const alltodos = await Todo.getTodos();
+ // const alltodos = await Todo.getTodos();s
   if(request.accepts("html")){
-    response.render('index',{
+    response.render('todos',{
       title: "Todo application",
       overdue,
       duelater,
@@ -36,8 +123,15 @@ app.get("/",async (request,response)=>{
   }
 
 
-});
+}); 
+app.get("/login",(request,response)=>{
+  response.render("login",{title: "Login",csrfToken: request.csrfToken()});
+})
 
+app.post("/session",passport.authenticate('local',{failureRedirect: "/login",failureFlash: true}),(request,response)=>{
+  console.log(request.user);
+     response.redirect("/todo");
+})
 app.use(express.static(path.join(__dirname,'public')));
 
   app.get("/todos", async (request, response) => {
@@ -53,7 +147,7 @@ app.post("/todos", async(request,response)=>{
     console.log("creating a todo",request.body)
     try {
        await Todo.addTodo({title: request.body.title,dueDate: request.body.dueDate, completed: false})
-        return response.redirect("/");
+        return response.redirect("/todo");
     } catch (error) {
         console.log("error")
         return response.status(422).json(error)
