@@ -11,7 +11,7 @@ const flash = require("connect-flash");
 //var csurf = require("tiny-csrf");
 const express = require("express");
 const app = express();
-const { Todo, User ,sports,sportsessionsv2,playersv3} = require("./models");
+const { Todo, User } = require("./models");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const path = require("path");
@@ -155,52 +155,15 @@ app.post(
   (request, response) => {
     if(request.body.email === "sathish@123" && request.body.password === "123"){
     console.log(request.user);
-    return response.redirect("/home");
-    }else{
-     return response.redirect("/home");
-    }}
+    response.redirect("/admin");
+    }
+  }
 );
 app.use(express.static(path.join(__dirname, "public")));
 
-app.get("/home", async (request,response)=>{
-  const getsport = await sports.findAll();
-  const userid = request.user.id;
-  console.log(request.user.id)
-   return response.render("home",{csrfToken: request.csrfToken(), getsport,userid });
+app.get("/admin", async (request,response)=>{
+   return response.render("admin");
 });
-app.post("/sports", async(request,response)=>{
-  const duplicate = await sports.findOne({
-    where:{
-      sportsName: request.body.sportName
-    }
-  })
-  console.log(duplicate);
-  if(!duplicate){
-  const sport = await sports.create({
-    sportsName: request.body.sportName
-  })
-  console.log(sport);
-  return response.redirect("/home");
-}
-else{
-  return response.send("Already exist")
-}
-})
-app.post("/create/:sport",async(request,response)=>{
-  try{
-  const sport = await sportsessionsv2.create({
-    Date: request.body.date,
-    location: request.body.location,
-    count: request.body.count,
-    sports: request.params.sport,
-    accessid: request.user.id
-  })
-  console.log(sport);
-  return response.redirect(`/${request.params.sport}`)
-} catch(err){
-  console.log(err);
-}
-})
 app.get("/todos", async (request, response) => {
   try {
     const todos = await Todo.findAll({ order: [["id", "ASC"]] });
@@ -260,183 +223,4 @@ app.get("/signout",(request,response,next)=>{
     response.redirect("/");
   })
 })
-
-app.get("/create/:sportname",(request,response)=>{
-  return response.render("pagee",{
-    csrfToken: request.csrfToken(),
-  })
-})
-
-
-app.get("/:nameOfTheSport", async (request, response) => {
-  
-  const Sportname = request.params.nameOfTheSport;
-  const date = new Date().toISOString();
-  const singleSport = await sportsessionsv2.findAll({
-    where:{
-      sports: request.params.nameOfTheSport
-    }
-  })
-  const userid = request.user.id;
-  console.log("userid:" + userid);
-  return response.render("page", {Sportname, singleSport,date,userid})
-})
-
-app.get("/:sportname/:sessionId", async (request, response) => {
-  try {
-    const sessionDetail = await sportsessionsv2.findOne({
-      where:{
-        id: request.params.sessionId,
-        sports: request.params.sportname
-      }
-    })
-    const sessionPlayerDetail = await playersv3.findAll({
-      where:{
-        sessionid: request.params.sessionId,
-        sports: request.params.sportname
-      }
-    })
-    const getCount = await playersv3.count({
-      where:{
-        sessionid: request.params.sessionId
-      }
-    })
-    const userid = request.user.id;
-    return response.render("sessionPage", {
-      csrfToken: request.csrfToken(),
-      sessionDetail,sessionPlayerDetail,getCount,userid
-    })
-  } catch (error) {
-    console.log(error);
-  }
-  
-})
-
-app.post("/:sportname/:sessionId", async (request, response) => {
-const play = await playersv3.create({
-  playersname:request.body.playername,
-  sessionid:request.params.sessionId,
-  sports:request.params.sportname
-
-})
-console.log(play);
-return response.redirect(`/${request.params.sportname}/${request.params.sessionId}`)
-})
-
-app.get("/Delete/Game/:id", async (request, response) => {
-  const deletesport = await sportsessionsv2.destroy({
-    where:{
-      id:request.params.id
-    }
-  })
-  const deleteGame = await sports.destroy({
-    where:{
-      id:request.params.id
-    }
-  })
-  return response.redirect("/home")
-})
-
-app.get("/Edit/Game/:name", async (request, response) => {
-  return response.render("newName", {
-    csrfToken: request.csrfToken(),
-  })
-})
-app.post("/Edit/Game/:name", async (request, response) => {
-  const updateSport = await sports.update({sportsName: request.body.newName}, {
-    where:{
-      sportsName: request.params.name
-    }
-  })
-
-  const updateSession = await sportsessionsv2.update({
-    sports:request.body.newName
-  }, {
-    where:{
-      sports:request.params.name
-    }
-  })
-  
-  return response.redirect("/home")
-})
-
-app.get("/Delete/Session/:id", async (request, response) => {
-  const deleteSession = await sportsessionsv2.destroy({
-    where:{
-      id:request.params.id
-    }
-  })
-  const deletePlayer = await playersv3.destroy({
-    where:{
-      sessionid:request.params.id
-    }
-  })
-  return response.redirect("/home")
-})
-
-app.get("/edit/Session/:id", async (request, response) => {
-  const getUpdateDetails = await sportsessionsv2.findOne({where:{
-    id:request.params.id
-  }})
-  return response.render("newFormUpdate", {
-    csrfToken: request.csrfToken(),
-    getUpdateDetails
-  })
-})
-
-app.post("/edit/Session/:id", async (request, response) => {
-
-  const updateSession = await sportsessionsv2.update({
-    Date: request.body.date,
-    location: request.body.location,
-    count: request.body.count
-  }, {
-    where:{
-      id: request.params.id
-    }
-  })
-
-  response.redirect("/home")
-})
-
-app.get("/:sportname/delete/Player/:playerid/:sessionID", async (request, response) => {
-
-  await playersv3.destroy({
-    where:{
-      id:request.params.playerid
-    }
-  })
-  return response.redirect(`/${request.params.sportname}/${request.params.sessionID}`)
-})
-
-app.get("/:sportname/join/Player/:userId/:sessionId", async (request, response) => {
-  const getUserName = await User.findOne({
-    where:{
-      id: request.params.userId
-    }
-  })
-  console.log("++++++=========");
-  console.log(getUserName.firstName)
-  console.log("++++++=========");
-  const duplicatefind = await playersv3.findOne({
-    sessionid: request.params.sessionId,
-    sports:request.params.sportname,
-    playersname: getUserName.firstName,
-    accessid:request.params.userId
-  })  
-  if(!duplicatefind){
-    const updatejoin = await playersv3.create({
-      sessionid: request.params.sessionId,
-      playersname: getUserName.firstName,
-      accessid:request.params.userId
-    })
-    console.log(updatejoin);
-    return response.redirect(`/${request.params.sportname}/${request.params.sessionId}`) 
-    
-  }
-  else{
-    return response.send("Already Joined")
-  }
-})
-
 module.exports = app;

@@ -12,8 +12,7 @@
     <body>
         <div class = "grid grid-clos-6">
             <div class="col-start-3 col-span-2">
-                <%- include('header.ejs') %>
-                <h6 class="py-4">Login into your account</h6>
+                <h1 class="py-4 text-4xl font-extrabold text-gray-900 dark:text-white">Login into your account </h1>
                 <form action="/session" method="post">
                     <% if(messages && messages.error && messages.error.length > 0)  { %>
                         <% for(var i=0; i<messages.error.length; i++) { %>
