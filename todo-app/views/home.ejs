@@ -6,41 +6,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="<%= csrfToken %>">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="./css/styles.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <title>Document</title>
+    <style>
+        .material-symbols-outlined {
+          font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 48
+        }
+        </style>
 </head>
 <body>
-    <% if(userid === 27){%>
+    <section id="pg">
+    <% if(emailid === "sathish@123"){%>
         <div class="grid place-items-center">
        <h1 class="py-4 text-4xl font-extrabold text-gray-900 dark:text-white" >Create a new sport</h1>
     <form action="/sports" method="post">
         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         <div class="py-3">
-        <label for="sportName">sportName :</label>
+        <label for="sportName">SportName :</label>
         <input type="text" name="sportName" required class="border border-gray-300 text-gray-900 rounded p-2">
         </div>
     <div class="py-3">
-        <button type="submit" class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-5 py-2">Submit</button>
+        <button type="submit" class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-5 py-2">Create</button>
         </div>
     </form>
     <% }%>
     <div class="grid place-items-center">
         <h1 class="py-4 text-4xl font-extrabold text-gray-900 dark:text-white">Sports</h1>
         <% getsport.forEach(function(user){ %>
-            <div class="max-w-sm rounded overflow-hidden shadow-lg">
+            <br>
+            <div class="bg-gray-200 max-w-sm rounded overflow-hidden shadow-lg">
                 <div class="px-6 py-4">
-                  <div class="font-bold text-xl mb-2"><a href="" class="href"><%= user.sportsName %></a></div>
+                  <div class="font-bold text-xl mr-2 mb-2"><a href="" class="href"><%= user.sportsName %></a></div>
                 </div>
+                <% if(emailid === "sathish@123"){%>
                 <div class="px-6 pt-4 pb-2">
-            
-                    <% if(userid === 27){%>
-                <button class="text-white bg-green-600 hover:bg-red-800 font-medium rounded px-5 py-2 deleteBtn" onclick="">Delete</button>
-                <button class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-5 py-2 editBtn" onclick="">Edit</button>
-                 <%}%>
-                </div>
+                <button class="text-white bg-red-800 hover:bg-red-400 font-medium rounded px-5 py-2 deleteBtn" onclick=""><span style="color:transparent;"><%= user.id %></span><span class="material-symbols-outlined">
+                    </span></button>
+
+                <button class="text-white bg-blue-800 hover:bg-blue-400 font-medium rounded px-5 py-2 editBtn" onclick=""><span style="color:transparent;"><%= user.sportsName %></span></button>
+               
+            </div>
+                <% }%>
               </div>
+             
      <% }); %>
     </div>
     </div>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
     <script>
         let deleteBtn = document.querySelectorAll("button.deleteBtn");
         deleteBtn.forEach((b) => {
@@ -71,5 +89,6 @@
             })
         })
     </script>
+    </section>
 </body>
 </html>

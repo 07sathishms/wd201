@@ -165,8 +165,9 @@ app.use(express.static(path.join(__dirname, "public")));
 app.get("/home", async (request,response)=>{
   const getsport = await sports.findAll();
   const userid = request.user.id;
+  const emailid = request.user.email;
   console.log(request.user.id)
-   return response.render("home",{csrfToken: request.csrfToken(), getsport,userid });
+   return response.render("home",{csrfToken: request.csrfToken(), getsport,userid ,emailid});
 });
 app.post("/sports", async(request,response)=>{
   const duplicate = await sports.findOne({
@@ -272,6 +273,7 @@ app.get("/:nameOfTheSport", async (request, response) => {
   
   const Sportname = request.params.nameOfTheSport;
   const date = new Date().toISOString();
+  const emailid = request.user.email;
   const singleSport = await sportsessionsv2.findAll({
     where:{
       sports: request.params.nameOfTheSport
@@ -279,7 +281,7 @@ app.get("/:nameOfTheSport", async (request, response) => {
   })
   const userid = request.user.id;
   console.log("userid:" + userid);
-  return response.render("page", {Sportname, singleSport,date,userid})
+  return response.render("page", {Sportname, singleSport,emailid,date,userid})
 })
 
 app.get("/:sportname/:sessionId", async (request, response) => {
@@ -302,9 +304,10 @@ app.get("/:sportname/:sessionId", async (request, response) => {
       }
     })
     const userid = request.user.id;
+    const emailid = request.user.email;
     return response.render("sessionPage", {
       csrfToken: request.csrfToken(),
-      sessionDetail,sessionPlayerDetail,getCount,userid
+      sessionDetail,sessionPlayerDetail,getCount,emailid,userid
     })
   } catch (error) {
     console.log(error);
@@ -360,43 +363,79 @@ app.post("/Edit/Game/:name", async (request, response) => {
   return response.redirect("/home")
 })
 
-app.get("/Delete/Session/:id", async (request, response) => {
-  const deleteSession = await sportsessionsv2.destroy({
+   app.get("/Delete/Session/:id", async (request, response) => {
+   const deleteSession = await sportsessionsv2.destroy({
+    where:{
+       id:request.params.id
+       }
+     })
+     const deletePlayer = await playersv3.destroy({
+       where:{
+        sessionid:request.params.id
+     }
+  })
+  return response.redirect("/home")
+ })
+
+app.get("/edit/Session/:id", async (request, response) => {
+ const getUpdateDetails = await sportsessionsv2.findOne({where:{
+  id:request.params.id
+    }})
+  return response.render("newFormUpdate", {
+      csrfToken: request.csrfToken(),
+    getUpdateDetails
+    })
+  })
+
+app.post("/edit/Session/:id", async (request, response) => {
+
+ const updateSession = await sportsessionsv2.update({
+    Date: request.body.date,
+    location: request.body.location,
+   count: request.body.count
+ }, {
+   where:{
+      id: request.params.id
+   }
+   })
+
+   response.redirect("/home")
+ })
+app.get("/Delete/Game/:id", async (request, response) => {
+  const deletesport = await sportsessionsv2.destroy({
     where:{
       id:request.params.id
     }
   })
-  const deletePlayer = await playersv3.destroy({
+  const deleteGame = await sports.destroy({
     where:{
-      sessionid:request.params.id
+      id:request.params.id
     }
   })
   return response.redirect("/home")
 })
 
-app.get("/edit/Session/:id", async (request, response) => {
-  const getUpdateDetails = await sportsessionsv2.findOne({where:{
-    id:request.params.id
-  }})
-  return response.render("newFormUpdate", {
+app.get("/Edit/Game/:name", async (request, response) => {
+  return response.render("newName", {
     csrfToken: request.csrfToken(),
-    getUpdateDetails
   })
 })
-
-app.post("/edit/Session/:id", async (request, response) => {
-
-  const updateSession = await sportsessionsv2.update({
-    Date: request.body.date,
-    location: request.body.location,
-    count: request.body.count
-  }, {
+app.post("/Edit/Game/:name", async (request, response) => {
+  const updateSport = await sports.update({sportsName: request.body.newName}, {
     where:{
-      id: request.params.id
+      sportsName: request.params.name
     }
   })
 
-  response.redirect("/home")
+  const updateSession = await sportsessionsv2.update({
+    sports:request.body.newName
+  }, {
+    where:{
+      sports:request.params.name
+    }
+  })
+  
+  return response.redirect("/home")
 })
 
 app.get("/:sportname/delete/Player/:playerid/:sessionID", async (request, response) => {
