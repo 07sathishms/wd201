@@ -129,7 +129,7 @@ app.post("/users",async (request, response) => {
       if (err) {
         console.log(err);
       }
-      response.redirect("todos");
+      response.redirect("/");
     });
   } catch (error) {
     console.log(error);
