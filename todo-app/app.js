@@ -284,6 +284,18 @@ app.get("/:nameOfTheSport", async (request, response) => {
   return response.render("page", {Sportname, singleSport,emailid,date,userid})
 })
 
+
+app.post("/:sportname/:sessionId", async (request, response) => {
+const play = await playersv3.create({
+  playersname:request.body.playername,
+  sessionid:request.params.sessionId,
+  sports:request.params.sportname
+
+})
+console.log(play);
+return response.redirect(`/${request.params.sportname}/${request.params.sessionId}`)
+})
+
 app.get("/:sportname/:sessionId", async (request, response) => {
   try {
     const sessionDetail = await sportsessionsv2.findOne({
@@ -303,27 +315,26 @@ app.get("/:sportname/:sessionId", async (request, response) => {
         sessionid: request.params.sessionId
       }
     })
+
+    const getAccessId = await sportsessionsv2.findOne({
+      where:{
+        id: request.params.sessionId,
+      }
+    })
+    console.log("==============================================================================================");
+    console.log(getAccessId);
+    console.log("==============================================================================================");
+
     const userid = request.user.id;
     const emailid = request.user.email;
     return response.render("sessionPage", {
       csrfToken: request.csrfToken(),
-      sessionDetail,sessionPlayerDetail,getCount,emailid,userid
+      sessionDetail,sessionPlayerDetail,getCount,emailid,userid,getAccessId
     })
   } catch (error) {
     console.log(error);
   }
   
-})
-
-app.post("/:sportname/:sessionId", async (request, response) => {
-const play = await playersv3.create({
-  playersname:request.body.playername,
-  sessionid:request.params.sessionId,
-  sports:request.params.sportname
-
-})
-console.log(play);
-return response.redirect(`/${request.params.sportname}/${request.params.sessionId}`)
 })
 
 app.get("/Delete/Game/:id", async (request, response) => {
@@ -477,5 +488,58 @@ app.get("/:sportname/join/Player/:userId/:sessionId", async (request, response) 
     return response.send("Already Joined")
   }
 })
+
+app.get("/:sportName/join/Players/JOIN/:sessionID", async (request, response) => {
+  const getUserName = await User.findOne({
+    id:request.user.id
+  })
+  const existingPlayer = await playersv3.findOne({
+    where: {
+      sessionid: request.params.sessionID,
+    playersname: getUserName.firstName,
+    sports: request.params.sportName
+    }
+  })
+  console.log("======================================================================================================");
+  console.log(existingPlayer);
+  console.log("======================================================================================================");
+  if(!existingPlayer) {
+    const joinPlayers = await playersv3.create({
+      sessionid: request.params.sessionID,
+      playersname: getUserName.firstName,
+      sports: request.params.sportName
+    })
+    return response.redirect(`/${request.params.sportName}/${request.params.sessionID}`)
+  }
+  else {
+    return response.send("Already Joined")
+  }
+  
+} )
+
+app.get("/:sportName/leave/Players/LEAVE/:sessionID", async (request, response) => {
+  const getUserName = await User.findOne({
+    id:request.user.id
+  })
+  const existingPlayer = await playersv3.findOne({
+    where: {
+      sessionid: request.params.sessionID,
+    playersname: getUserName.firstName,
+    sports: request.params.sportName
+    }
+  })
+  console.log("======================================================================================================");
+  console.log(existingPlayer);
+  console.log("======================================================================================================");
+    const joinPlayers = await playersv3.destroy({
+      where:{
+      sessionid: request.params.sessionID,
+      playersname: getUserName.firstName,
+      sports: request.params.sportName
+      }
+    })
+    return response.redirect(`/${request.params.sportName}/${request.params.sessionID}`)
+  
+} )
 
 module.exports = app;
